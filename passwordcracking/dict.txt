@@ -1,0 +1,6 @@
+password
+root
+admin
+baseball
+water
+mouse
