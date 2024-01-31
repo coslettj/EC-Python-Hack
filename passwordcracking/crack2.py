@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+# 
+# Read a file from the internet and a hash from the terminal to find the password
+#
+
 import hashlib
 from urllib.request import urlopen
 from termcolor import colored

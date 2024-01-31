@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+#
+# Generate hashes of a password entered by the user
+#
+
+
 import hashlib
 
 def main():
