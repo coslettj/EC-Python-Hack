@@ -1,0 +1,9 @@
+# Exclude the virtual environment directory
+.venv
+
+# Exclude JSON files other than the schema
+!web-checker-schema.json
+*.json
+
+# Exclude PDF files
+*.pdf

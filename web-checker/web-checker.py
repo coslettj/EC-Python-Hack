@@ -88,81 +88,86 @@ class PDF(FPDF):
 
 def generatePDF(runInfo, filename:str):
     """Generates a PDF file with the given text and filename."""
-    lineSpace = 6
-    pdf = PDF()
-    pdf.add_page()
+    try:
+        lineSpace = 6
+        pdf = PDF()
+        pdf.add_page()
 
-    # Create metadata for the PDF
-    pdf.set_title("Web Proxy Checker Report")
+        # Create metadata for the PDF
+        pdf.set_title("Web Proxy Checker Report")
 
-    if "engineer" in runInfo or "company" in runInfo:
-        pdf.heading("Report Information")
+        if "engineer" in runInfo or "company" in runInfo:
+            pdf.heading("Report Information")
 
-    if "engineer" in runInfo:
-        pdf.set_font("Helvetica", size=10)
-        pdf.paragraph(f"Report run by: {runInfo['engineer']}")
-        pdf.set_author(runInfo["engineer"])
+        if "engineer" in runInfo:
+            pdf.set_font("Helvetica", size=10)
+            pdf.paragraph(f"Report run by: {runInfo['engineer']}")
+            pdf.set_author(runInfo["engineer"])
 
-    if "company" in runInfo:
-        pdf.set_font("Helvetica", size=10)
-        pdf.paragraph(f"Company: {runInfo['company']}")
-        pdf.set_keywords(runInfo["company"])
-        pdf.set_subject(f'Report run for {runInfo["company"]} on {runInfo["date"]}')
+        if "company" in runInfo:
+            pdf.set_font("Helvetica", size=10)
+            pdf.paragraph(f"Company: {runInfo['company']}")
+            pdf.set_keywords(runInfo["company"])
+            pdf.set_subject(f'Report run for {runInfo["company"]} on {runInfo["date"]}')
 
-    if "date" in runInfo:
-        pdf.set_font("Helvetica", size=10)
-        pdf.paragraph(f"Date: {runInfo['date']}")
-    
-    if "engineer" in runInfo or "company" in runInfo or "date" in runInfo:
-        # Draw a horizontal line to seperate the sections
-        pdf.horizontal_line()
-        pdf.cell(0, lineSpace, "", 0, align="L", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-
-    if "extendedChecks" in runInfo:
-        # Print the extended checks
-        if "PUBLIC-IP" in runInfo["extendedChecks"]:
-            # Print the result of the public IP check
-            pdf.heading("Public IP information from the test device")
-            pdf.paragraph(f"Public IP: {runInfo['extendedChecks']['PUBLIC-IP']['ip']}")
-            pdf.paragraph(f"Provider: {runInfo['extendedChecks']['PUBLIC-IP']['org']}")
-            pdf.paragraph(f"Location: {runInfo['extendedChecks']['PUBLIC-IP']['loc']}")
-            pdf.paragraph(f"City: {runInfo['extendedChecks']['PUBLIC-IP']['city']}")
-            pdf.paragraph(f"Region: {runInfo['extendedChecks']['PUBLIC-IP']['region']}")
-            pdf.paragraph(f"Country: {runInfo['extendedChecks']['PUBLIC-IP']['country']}")
-            pdf.paragraph(f"Timezone: {runInfo['extendedChecks']['PUBLIC-IP']['timezone']}")
-
-        if  "tlsVersions" in runInfo["extendedChecks"]:
-            # Print the result of the TLS version checks
-            pdf.heading("TLS Version Checks")
-            pdf.paragraph("This test checks which versions of TLS are permitted, versions 1.0 and 1.1 are considered insecure so should be blocked.")
-            
-            for tlsCheck in runInfo["extendedChecks"]["tlsVersions"]:
-                pdf.paragraph(f"{tlsCheck['version']} - {lookup_error_code(tlsCheck['status'])}")
+        if "date" in runInfo:
+            pdf.set_font("Helvetica", size=10)
+            pdf.paragraph(f"Date: {runInfo['date']}")
         
-        if "EICAR" in runInfo["extendedChecks"]:
-            # Print the result of the EICAR check
-            pdf.heading("EICAR Virus Check")
-            if runInfo["extendedChecks"]["EICAR"]:
-                pdf.paragraph("EICAR test file downloaded successfully. Whilst the EICAR file is not an active virus this shows that your proxy settings have allowed the virus to be downloaded to the test PC.", "BI")
-            else:
-                pdf.paragraph("The EICAR test file failed to dowload, this is an indication that it has been blocked.")
-    
-    # Print the URL checks
-    if "urlChecks" in runInfo:
-        # Print the heading
-        pdf.heading("URL tests")
-        for category in runInfo["urlChecks"]:
-            # Print the category heading
-            pdf.subheading(f"Category: {category['category']}")
-            for urls in category["urls"]:
-                url = urls['url']
-                description = urls['description']
-                status = urls['status']
-                pdf.paragraph(f"{description} ({url}) - {lookup_error_code(status)} ({status})")
+        if "engineer" in runInfo or "company" in runInfo or "date" in runInfo:
+            # Draw a horizontal line to seperate the sections
+            pdf.horizontal_line()
+            pdf.cell(0, lineSpace, "", 0, align="L", new_x=XPos.LMARGIN, new_y=YPos.NEXT)
 
-    # Write the PDF
-    pdf.output(filename)
+        if "extendedChecks" in runInfo:
+            # Print the extended checks
+            if "PUBLIC-IP" in runInfo["extendedChecks"]:
+                # Print the result of the public IP check
+                pdf.heading("Public IP information from the test device")
+                pdf.paragraph(f"Public IP: {runInfo['extendedChecks']['PUBLIC-IP']['ip']}")
+                pdf.paragraph(f"Provider: {runInfo['extendedChecks']['PUBLIC-IP']['org']}")
+                pdf.paragraph(f"Location: {runInfo['extendedChecks']['PUBLIC-IP']['loc']}")
+                pdf.paragraph(f"City: {runInfo['extendedChecks']['PUBLIC-IP']['city']}")
+                pdf.paragraph(f"Region: {runInfo['extendedChecks']['PUBLIC-IP']['region']}")
+                pdf.paragraph(f"Country: {runInfo['extendedChecks']['PUBLIC-IP']['country']}")
+                pdf.paragraph(f"Timezone: {runInfo['extendedChecks']['PUBLIC-IP']['timezone']}")
 
+            if  "tlsVersions" in runInfo["extendedChecks"]:
+                # Print the result of the TLS version checks
+                pdf.heading("TLS Version Checks")
+                pdf.paragraph("This test checks which versions of TLS are permitted, versions 1.0 and 1.1 are considered insecure so should be blocked.")
+                
+                for tlsCheck in runInfo["extendedChecks"]["tlsVersions"]:
+                    pdf.paragraph(f"{tlsCheck['version']} - {lookup_error_code(tlsCheck['status'])}")
+            
+            if "EICAR" in runInfo["extendedChecks"]:
+                # Print the result of the EICAR check
+                pdf.heading("EICAR Virus Check")
+                if runInfo["extendedChecks"]["EICAR"]:
+                    pdf.paragraph("EICAR test file downloaded successfully. Whilst the EICAR file is not an active virus this shows that your proxy settings have allowed the virus to be downloaded to the test PC.", "BI")
+                else:
+                    pdf.paragraph("The EICAR test file failed to dowload, this is an indication that it has been blocked.")
+        
+        # Print the URL checks
+        if "urlChecks" in runInfo:
+            # Print the heading
+            pdf.heading("URL tests")
+            for category in runInfo["urlChecks"]:
+                # Print the category heading
+                pdf.subheading(f"Category: {category['category']}")
+                if 'urls' in category:
+                    for urls in category["urls"]:
+                        url = urls['url']
+                        description = urls['description']
+                        status = urls['status']
+                        pdf.paragraph(f"{description} ({url}) - {lookup_error_code(status)} ({status})")
+                else:
+                    pdf.paragraph("No URLs found in this category.")
+        # Write the PDF
+        pdf.output(filename)
+    except Exception as e:
+        print(f"[bold red]Error generating PDF: {e}[/bold red]")
+        sys.exit(1)
 
 def lookup_error_code(code):
     """Lookup the error code and return the description."""
@@ -234,6 +239,18 @@ def check_urls(sections):
     The results are printed to the console.
     """
     try:
+        # Fake a browser user agent to avoid being blocked by some websites
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Referer": "https://www.google.com/"
+        }
+        headers = {
+            "user-agent": "curl/8.7.1",
+            "accept": "*/*"
+        }
+
         results = []
         for section_heading, urls in sections.items():
             print(f"  Category: [bold]{section_heading}[/bold]")
@@ -245,23 +262,26 @@ def check_urls(sections):
                 url = url_info.get("url")
                 description = url_info.get("description", "No description provided")
                 print(f"    Checking {description}: {url}", end="")
+                urlCheck["url"] = url
+                urlCheck["description"] = description
                 try:
-                    response = requests.get(url, timeout=5, verify=False)
+                    session = requests.Session()
+                    # Set the session headers
+                    session.headers.update(headers)                    
+                    response = session.get(url, timeout=5, verify=False, allow_redirects=False)
                     if response.status_code == 200:
                         # URL connected successfully
                         print("[bold green]    OK ({})[/bold green]".format(response.status_code))
-                        urlCheck["url"] = url
-                        urlCheck["description"] = description
                         urlCheck["status"] = response.status_code
                     else:
                         # URL returned an error status code
                         print(f"[bold red]    Error: {lookup_error_code(response.status_code)} ({response.status_code})[/bold red]")
-                        urlCheck["url"] = url
-                        urlCheck["description"] = description
                         urlCheck["status"] = response.status_code
                 except requests.RequestException as e:
                     # URL connection failed, display the error
+                    urlCheck["status"] = "Connection error"
                     print(f"    Connection error: {e}")
+                session.close()
                 urlChecks.append(urlCheck)
             sectionCheck["urls"] = urlChecks
             results.append(sectionCheck)
