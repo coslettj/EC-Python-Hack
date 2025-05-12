@@ -1,0 +1,30 @@
+{
+    "type": "object",
+    "properties": {
+        "Engineer": { "type": "string" },
+        "Company": { "type": "string" },
+        "Extended Checks": {
+            "type": "array",
+            "items": { "type": "string", 
+                        "enum": ["PUBLIC-IP", "EICAR", "TLS-VERSIONS"]
+                    }
+        },
+        "URL Checks": {
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "url": { "type": "string" },
+                            "description": { "type": "string" }
+                        },
+                        "required": ["url","description"]
+                    }
+                }
+            }
+        }
+    },
+    "required": ["URL Checks"]
+}
